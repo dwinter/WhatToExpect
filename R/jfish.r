@@ -40,7 +40,7 @@ find_optima <- function(x, maxima=TRUE){
     which(diff_of_diffs == 2) + 1
 }
 
-est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.95){
+est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.98){
     denom <- switch(tolower(unit), 
              "b" =  1e0,
              "kb" = 1e3,       
@@ -51,24 +51,20 @@ est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.95){
     error_edge <- find_optima(kmer_hist[,2], maxima=FALSE)[1]
     NR <- nrow(kmer_hist)
     peak <- which.max(kmer_hist$freq[(error_edge+1):NR]) + error_edge
+    peak_x <- kmer_hist$n[peak]
     if(plot){
         top <- max(kmer_hist$freq)
         peak_y <- kmer_hist$freq[peak]
         err_colour <- "#C40018"
         peak_colour <- "#292725"
-        plot_kmer_hist(kmer_hist)
+        plot_kmer_hist(kmer_hist, x_cutoff=x_cutoff)
         rect(xleft=1, xright=error_edge, ytop=top, ybottom=0, col=paste0(err_colour,"99"), border="red")
         text(x=error_edge, y=0.9 * max(kmer_hist$freq), "Excluded kmers", pos=4, col=err_colour)
-        points(x=peak, peak_y, col=peak_colour, pch=19)
+        points(x=peak_x, peak_y, col=peak_colour, pch=19)
         lab = paste0("peak coverage (", peak, ")")
-        text(x=peak, y=kmer_hist$freq[peak], lab, col=peak_colour, pos=3)
+        text(x=peak_x, y=peak_y, lab, col=peak_colour, pos=3)
     }
     
-    sum(apply(kmer_hist[9:nrow(kmer_hist),], 1, prod)) / (peak*denom)
+    sum(apply(kmer_hist[9:nrow(kmer_hist),], 1, prod)) / (peak_x*denom)
 }
-
-
-
-
-
  

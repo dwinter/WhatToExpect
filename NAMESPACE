@@ -2,4 +2,5 @@
 
 export(fq_AT)
 importFrom(Rcpp,sourceCpp)
+importFrom(mixtools,normalmixEM)
 useDynLib(WhatToExpect)
