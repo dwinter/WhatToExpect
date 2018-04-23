@@ -28,8 +28,8 @@ read_jfish <- function(hist_file, exe="jellyfish"){
 
 
 plot_kmer_hist <- function(hist, x_cutoff=0.95){
-    x <- which(cumsum(kmer_counts$freq)/sum(kmer_counts$freq) > x_cutoff)[1]
-    plot(hist[1:x,], type='l', xlab="Number of kmers")
+    x <- which(cumsum(hist$freq)/sum(hist$freq) > x_cutoff)[1]
+    plot(hist[1:x,], type='l', xlab="Number of kmers", main="Kmer spectrum")
 }
 
 find_optima <- function(x, maxima=TRUE){
@@ -40,7 +40,7 @@ find_optima <- function(x, maxima=TRUE){
     which(diff_of_diffs == 2) + 1
 }
 
-est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.98){
+est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE){
     denom <- switch(tolower(unit), 
              "b" =  1e0,
              "kb" = 1e3,       
