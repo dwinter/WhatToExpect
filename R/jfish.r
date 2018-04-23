@@ -40,7 +40,7 @@ find_optima <- function(x, maxima=TRUE){
     which(diff_of_diffs == 2) + 1
 }
 
-est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE){
+est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.95){
     denom <- switch(tolower(unit), 
              "b" =  1e0,
              "kb" = 1e3,       
