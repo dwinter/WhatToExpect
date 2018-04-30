@@ -1,6 +1,7 @@
 #include <string>
 #include <Rcpp.h>
 #include <fstream>
+#include "gzstream.h"
 
 double AT(std::string sequence){
     uint32_t n = 0;
@@ -34,17 +35,28 @@ double AT(std::string sequence){
     return(AT / double(n));
 }
 
+
+
 // [[Rcpp::export]]
-Rcpp::NumericVector fastq_AT(std::string fq_path){
+Rcpp::NumericVector fastq_AT_generic(std::string fq_path, bool gz, size_t nreads){
     Rcpp::NumericVector res;
-    std::ifstream fq(fq_path);
-    std::string line;
+    std::ifstream* fq;
+    if (gz) {
+        fq = igzstream(fq_path.c_str());
+    }
+    else {
+        fq = std::ifstream(fq_path);
+    }
     size_t i = 0;
+    std::string line;
     while(getline(fq,line)){
         if (i % 4 == 1){
             res.push_back( AT(line) );
         }
         i++;
+        if( i / 4 >= nreads) {
+            break;
+        }
     }
     return(res);
 }

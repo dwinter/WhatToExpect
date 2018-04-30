@@ -2,8 +2,8 @@
 #' @useDynLib WhatToExpect
 #' @export
 
-fq_AT <- function(path){
-    fastq_AT(path.expand(path))
+fq_AT <- function(path, gz=TRUE, nreads=-1){
+    fastq_AT(path.expand(path), gz, nreads)
 }
 
 #' @importFrom mixtools normalmixEM
@@ -22,3 +22,8 @@ summarize_AT_mix <- function(mix){
     data.frame( component = 1:2,est_prop = mix$lambda, mean_AT = mix$mu, sd_AT = mix$sigma)
 }
 
+posterior <- function(x, fitted_model){
+    A <- dnorm(x, fitted_model$mu[1], fitted_model$sigma[1])
+    B <- dnorm(x, fitted_model$mu[2], fitted_model$sigma[2])
+    A/(A+B)
+}
