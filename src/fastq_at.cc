@@ -31,25 +31,16 @@ double AT(std::string sequence){
             default:    break;
                       
         }
-    }
+    }    
     return(AT / double(n));
 }
 
-
-
-// [[Rcpp::export]]
-Rcpp::NumericVector fastq_AT_generic(std::string fq_path, bool gz, size_t nreads){
+template < typename stream_type >
+Rcpp::NumericVector fastq_AT_generic(stream_type &fq_stream, size_t nreads){
     Rcpp::NumericVector res;
-    std::ifstream* fq;
-    if (gz) {
-        fq = igzstream(fq_path.c_str());
-    }
-    else {
-        fq = std::ifstream(fq_path);
-    }
     size_t i = 0;
     std::string line;
-    while(getline(fq,line)){
+    while(getline(fq_stream,line)){
         if (i % 4 == 1){
             res.push_back( AT(line) );
         }
@@ -57,6 +48,23 @@ Rcpp::NumericVector fastq_AT_generic(std::string fq_path, bool gz, size_t nreads
         if( i / 4 >= nreads) {
             break;
         }
+    }
+    if (i == 0){
+        Rcpp::stop("Couldn't find any reads in fastq file");
+    }
+    return(res);
+}
+
+// [[Rcpp::export]]
+Rcpp::NumericVector fastq_AT(std::string fq_path, bool gz, size_t nreads){
+    Rcpp::NumericVector res;
+    if (gz) {
+        igzstream fq(fq_path.c_str());
+        res = fastq_AT_generic( fq, nreads ) ;
+    }
+    else {
+        std::ifstream fq(fq_path);
+        res = fastq_AT_generic( fq, nreads );
     }
     return(res);
 }
