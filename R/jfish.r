@@ -27,9 +27,15 @@ read_jfish <- function(hist_file, exe="jellyfish"){
 }
 
 
-plot_kmer_hist <- function(hist, x_cutoff=0.95){
+plot_kmer_hist <- function(hist, x_cutoff=0.95, y_cutoff=NULL){
     x <- which(cumsum(hist$freq)/sum(hist$freq) > x_cutoff)[1]
-    plot(hist[1:x,], type='l', xlab="Number of kmers", main="Kmer spectrum")
+    title <- "Kmer spectrum"
+    xaxis <- "Number of kmers"
+    if(!is.null(y_cutoff)){
+        plot(hist[1:x,], type='l', xlab=xaxis, main=title, ylim=c(0,y_cutoff))
+    } else {
+        plot(hist[1:x,], type='l', xlab=xaxis, main=title)
+    }
 }
 
 find_optima <- function(x, maxima=TRUE){
@@ -57,9 +63,9 @@ est_genome_size <- function(kmer_hist, unit="Mb", plot=TRUE, x_cutoff=0.95){
         peak_y <- kmer_hist$freq[peak]
         err_colour <- "#C40018"
         peak_colour <- "#292725"
-        plot_kmer_hist(kmer_hist, x_cutoff=x_cutoff)
+        plot_kmer_hist(kmer_hist, x_cutoff=x_cutoff, y_cutoff=1.4 * peak_y)
         rect(xleft=1, xright=error_edge, ytop=top, ybottom=0, col=paste0(err_colour,"99"), border="red")
-        text(x=error_edge, y=0.9 * max(kmer_hist$freq), "Excluded kmers", pos=4, col=err_colour)
+        text(x=error_edge, y=1.3 * peak_y , "Excluded kmers", pos=4, col=err_colour)
         points(x=peak_x, peak_y, col=peak_colour, pch=19)
         lab = paste0("peak coverage (", peak, ")")
         text(x=peak_x, y=peak_y, lab, col=peak_colour, pos=3)
